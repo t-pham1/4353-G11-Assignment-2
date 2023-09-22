@@ -1,4 +1,4 @@
-{% extends 'base.html' %} {% block title %}Profile{% endblock %} {% block
+{% extends 'base.html' %} {% block title %}Fuel Quote Form{% endblock %} {% block
     content %}
     </br>
     <h2 align="center"><strong>Fuel Quote Form</strong></h2>
@@ -8,37 +8,35 @@
         a red star are mandatory.
       </h5>
       <div class="form-group">
-        <label class="required-field" for="gallonsRequested">Gallons Requested</label>
+        <label class="required-field" for="gallons">Gallons Requested</label>
         <input
           type="number"
           class="form-control"
-          id="gallonsRequested"
-          name="gallonsRequested"
-          placeholder="Gallons Requested"
-          maxlength="50"
-          value="{{ gallonsRequested }}"
+          id="gallons"
+          name="gallons"
+          placeholder="Enter Number of Gallons"
           required
         />
       </div>
       <div class="form-group">
-        <label for="addressOne">Address 1</label>
+        <label for="addressOne">Delivery Address 1</label>
         <input
             type="text"
             class="form-control"
             id="addressOne"
             name="addressOne"
-            value="{{ user_addressOne }}"
+            value="{{ addressOne }}"
             readonly
         />
       </div>
       <div class="form-group">
-        <label for="addressTwo">Address 2</label>
+        <label for="addressTwo">Delivery Address 2</label>
         <input
             type="text"
             class="form-control"
             id="addressTwo"
             name="addressTwo"
-            value="{{ user_addressTwo }}"
+            value="{{ addressTwo }}"
             readonly
             />
       </div>
@@ -49,18 +47,16 @@
             class="form-control"
             id="deliveryDate"
             name="deliveryDate"
-            min="2023-09-21"
-            max="2050-01-01"
         />
       </div>
       <div class="form-group">
-        <label for="suggestedPricePerGallon">Suggested Price Per Gallon</label>
+        <label for="pricePerGallon">Price Per Gallon</label>
         <input
             type="number"
             class="form-control"
-            id="suggestedPricePerGallon"
-            name="suggestedPricePerGallon"
-            placeholder="Will be calculated by pricing module in the future"
+            id="pricePerGallon"
+            name="pricePerGallon"
+            placeholder="TBD (when pricing module is finished)"
             readonly
             />
       </div>
@@ -71,8 +67,10 @@
             class="form-control"
             id="totalAmountDue"
             name="totalAmountDue"
+            placeholder="TBD (when pricing module is finished) [Gallons * Price Per Gallon]"
             readonly
             />
       </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     {% endblock %}
