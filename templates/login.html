@@ -4,9 +4,9 @@
 <!-- Style embedded within the document -->
 <style>
   /* Styling for the body element */
-  body {
+  /* body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-  }
+  } */
 
   /* Styling for the h1 element */
   h1 {
@@ -68,10 +68,10 @@
   <form action="login" method="POST">
     <!-- Input field for the email -->
     <input
-      type="email"
-      name="email"
-      id="email"
-      placeholder="Email Address"
+      type="text"
+      name="username"
+      id="username"
+      placeholder="Enter Username"
       required
     />
     <br /><br />
@@ -89,7 +89,7 @@
   </form>
 
   <!-- Registration link for new users -->
-  <span>New Here? <a href="sign_up.html">Register Here</a></span>
+  <span>New Here? <a href="/sign_up">Register Here</a></span>
 </body>
 
 {% endblock %}

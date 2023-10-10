@@ -52,9 +52,29 @@
           <li class="nav-item">
             <a class="nav-link" href="/history">History</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout">Logout</a>
+          </li>
         </ul>
       </div>
     </nav>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-info alter-dismissable">
+      <a herf="#" class="close" data-bs-dismiss="alert" aria-label="close"
+        >&times;</a
+      >
+      {{ message }}
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissable">
+      <a herf="#" class="close" data-bs-dismiss="alert" aria-label="close"
+        >&times;</a
+      >
+      {{ message }}
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
     <div class="container">{% block content %}{% endblock %}</div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
