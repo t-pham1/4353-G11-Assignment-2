@@ -58,14 +58,18 @@
     {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %} {% for category, message in messages %} {% if category ==
     'error' %}
-    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+    <div class="alert alert-info alter-dismissable">
+      <a herf="#" class="close" data-bs-dismiss="alert" aria-label="close"
+        >&times;</a
+      >
       {{ message }}
-      <button type="button" class="close" data-dismiss="alert"></button>
     </div>
     {% else %}
-    <div class="alert alert-success alter-dismissable fade show" role="alert">
+    <div class="alert alert-success alter-dismissable">
+      <a herf="#" class="close" data-bs-dismiss="alert" aria-label="close"
+        >&times;</a
+      >
       {{ message }}
-      <button type="button" class="close" data-dismiss="alert"></button>
     </div>
     {% endif %} {% endfor %} {% endif %} {% endwith %}
     <div class="container">{% block content %}{% endblock %}</div>

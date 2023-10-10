@@ -22,6 +22,8 @@ def profile():
         zipcode = request.form.get('zipcode')
         # print(fullName + ' ' + addressOne + ' ' + addressTwo + ' ' + city + ' ' + state + ' ' + zipcode)
 
+        flash('Profile complete.', category='success')
+
     return render_template('profile.html')
 
 @app.route('/sign_up', methods = ['GET', 'POST'])
@@ -31,12 +33,12 @@ def sign_up():
         password = request.form.get('password')
         # print(username + ' ' + password)
 
-        # if len(username) < 1:
-        #     flash('Please enter a username.', category='error')
-        # elif len(password) < 1:
-        #     flash('Please enter a password.', category='error') 
-        # else:
-        #     flash('You have successfully registered.', category='sucess')
+        if len(username) < 1:
+            flash('Please enter a username.', category='error')
+        elif len(password) < 1:
+            flash('Please enter a password.', category='error') 
+        else:
+            flash('Registration complete.', category='success')
         
     return render_template('sign_up.html')
 
