@@ -9,6 +9,13 @@ def index():
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        # if username in username database and password is correct:
+        # flash('Login successful.', category='success')
+
     return render_template('login.html')
 
 @app.route('/profile', methods = ['GET', 'POST'])
@@ -38,11 +45,12 @@ def sign_up():
         elif len(password) < 1:
             flash('Please enter a password.', category='error') 
         else:
+
             flash('Registration complete.', category='success')
         
     return render_template('sign_up.html')
 
-@app.route('/quote')
+@app.route('/quote', methods = ['GET', 'POST'])
 def quote():
     return render_template('quote.html')
 
