@@ -8,11 +8,18 @@ hardcodePassword = "password"
 
 class PricingModule:
     def __init__(self):
-        pass
+        self.hardcodePrice = 2.5
+        self.quote_id = 1
+        self.quote_history = []
     
     def get_price_per_gallon(self):
-        hardcodePrice = 2.5
-        return hardcodePrice
+        # hardcodePrice = 2.5
+        return self.hardcodePrice
+    
+    def update_quote_history(self, quote_details):
+        quote_details['quote_id'] = self.quote_id
+        self.quote_id += 1
+        self.quote_history.append(quote_details)
 
 @app.route('/')
 def index():
@@ -111,17 +118,6 @@ def quote():
     addressTwo = session.get('addressTwo', '')
     
     if request.method == 'POST':
-        if 'addressOne' in session:
-            addressOne = session['addressOne']
-        elif 'addressTwo' in session:
-            addressTwo = session['addressTwo']
-        elif 'addressOne' in session and 'addressTwo' in session:
-            addressOne = session['addressOne']
-            addressTwo = session['addressTwo']
-        else:
-            flash('Please complete your profile first.', category='error')
-            return redirect(url_for('profile'))
-        
         gallons = float(request.form.get('gallons'))
         delivery_date = request.form.get('deliveryDate')
         price_per_gallon = pricing_module.get_price_per_gallon()
@@ -131,6 +127,17 @@ def quote():
         if gallons <= 0:
             flash('Please enter a valid number of gallons.', category='error')
         else:
+            quote_details = {
+                'quote_id': None,
+                'gallons': gallons,
+                'addressOne': addressOne,
+                'addressTwo': addressTwo,
+                'delivery_date': delivery_date,
+                'price_per_gallon': price_per_gallon,
+                'total_amount_due': total_amount_due
+            }
+            
+            pricing_module.update_quote_history(quote_details)
             flash('Form complete.', category='success')
 
     return render_template('quote.html',
@@ -139,7 +146,8 @@ def quote():
 
 @app.route('/history')
 def history():
-    return render_template('history.html')
+    return render_template('history.html',
+                           fuel_quote=pricing_module.quote_history)
 
 if __name__ == '__main__':
     app.run(debug=True)
