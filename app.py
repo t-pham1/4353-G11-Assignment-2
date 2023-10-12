@@ -20,6 +20,9 @@ def index():
 
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
+    if session["username"] != None:
+        flash('You are already signed in!', category='error')
+        return render_template('sign_up.html')
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -27,6 +30,7 @@ def login():
         if username == hardcodeUsername:
             if password == hardcodePassword:
                 flash('Login successful.', category='success')
+                session["username"] = request.form['username']
                 return redirect(url_for('index'))
             else:
                 flash('Incorrect password.', category='error')
@@ -37,51 +41,59 @@ def login():
 
 @app.route('/logout')
 def logout():
-    return redirect(url_for('login'))
+    session["username"] = None
+    return redirect(url_for('index'))
 
 @app.route('/profile', methods = ['GET', 'POST'])
 def profile():
-    if request.method == 'POST':
-        fullName = request.form.get('fullName')
-        addressOne = request.form.get('addressOne')
-        addressTwo = request.form.get('addressTwo')
-        city = request.form.get('city')
-        state = request.form.get('state')
-        zipcode = request.form.get('zipcode')
-        # print(fullName + ' ' + addressOne + ' ' + addressTwo + ' ' + city + ' ' + state + ' ' + zipcode)
+    if session['username'] == None:
+        flash("User is not signed in! Please login before accessing the profile\'s page.", category='error')
+        return render_template('profile.html')
+    else:
+        if request.method == 'POST':
+            fullName = request.form.get('fullName')
+            addressOne = request.form.get('addressOne')
+            addressTwo = request.form.get('addressTwo')
+            city = request.form.get('city')
+            state = request.form.get('state')
+            zipcode = request.form.get('zipcode')
+            # print(fullName + ' ' + addressOne + ' ' + addressTwo + ' ' + city + ' ' + state + ' ' + zipcode)
 
-        if len(fullName) <= 0:
-            flash('Full Name must be at least 1 character long.', category='error')
-        elif len(fullName) > 50:
-            flash('Full Name can be at most 50 characters long.', category='error')
-        elif len(addressOne) <= 0:
-            flash('Address 1 must be at least 1 character long.', category='error')
-        elif len(addressOne) > 100:
-            flash('Address 1 can be at most 100 characters long.', category='error')
-        elif len(addressTwo) > 100:
-            flash('Address 2 can be at most 100 characters long.', category='error')
-        elif len(city) > 100:
-            flash('City can be at most 100 characters long.', category='error')
-        elif len(zipcode) < 5:
-            flash('Zipcode must be at least 5 digits long.', category='error')
-        elif len(zipcode) > 9:
-            flash('Zipcode can be at most 9 digits long.', category='error')
-        else:
-            session['addressOne'] = request.form.get('addressOne')
-            session['addressTwo'] = request.form.get('addressTwo')
+            if len(fullName) <= 0:
+                flash('Full Name must be at least 1 character long.', category='error')
+            elif len(fullName) > 50:
+                flash('Full Name can be at most 50 characters long.', category='error')
+            elif len(addressOne) <= 0:
+                flash('Address 1 must be at least 1 character long.', category='error')
+            elif len(addressOne) > 100:
+                flash('Address 1 can be at most 100 characters long.', category='error')
+            elif len(addressTwo) > 100:
+                flash('Address 2 can be at most 100 characters long.', category='error')
+            elif len(city) > 100:
+                flash('City can be at most 100 characters long.', category='error')
+            elif len(zipcode) < 5:
+                flash('Zipcode must be at least 5 digits long.', category='error')
+            elif len(zipcode) > 9:
+                flash('Zipcode can be at most 9 digits long.', category='error')
+            else:
+                session['addressOne'] = request.form.get('addressOne')
+                session['addressTwo'] = request.form.get('addressTwo')
 
-            flash('Profile complete.', category='success')
-
-    return render_template('profile.html')
+                flash('Updated profile.', category='success')
+        return render_template('profile.html')
 
 @app.route('/sign_up', methods = ['GET', 'POST'])
 def sign_up():
+    if session["username"] != None:
+        flash('You are already signed in!', category='error')
+        return render_template('sign_up.html')
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        print(username + ' ' + password)
 
-        if len(username) < 1:
+        if username == hardcodeUsername:
+            flash('Username already exists.', category='error')
+        elif len(username) < 1:
             flash('Please enter a username.', category='error')
         elif len(password) < 1:
             flash('Please enter a password.', category='error') 
