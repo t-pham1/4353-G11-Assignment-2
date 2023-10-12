@@ -1,1 +1,26 @@
-{% extends 'base.html' %} {% block title %}Home{% endblock %}
+{% extends 'base.html' %} {% block title %}Logout{% endblock %}{% block
+content%}
+<body>
+  <div class="content">
+    <h1>GET A QUOTE TODAY!</h1>
+    <a href="/sign_up">Register</a>
+    <a href="/login">Login</a>
+  </div>
+</body>
+
+<style>
+  body {
+    background: linear-gradient(#2b2b2baa, #2b2b2baa), url(../static/bg1.png);
+    background-repeat: no-repeat;
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .content a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+</style>
+{% endblock content %}

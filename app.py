@@ -29,10 +29,10 @@ def login():
                 flash('Login successful.', category='success')
                 return redirect(url_for('index'))
             else:
-                flash('Incorrect password', category='error')
+                flash('Incorrect password.', category='error')
         else:
-            flash('Username does not exist', category='error')
-
+            flash('Username does not exist.', category='error')
+    
     return render_template('login.html')
 
 @app.route('/logout')

@@ -2,3 +2,26 @@
   content: " *";
   color: red;
 }
+
+.content {
+  padding: 275px 0;
+  text-align: center;
+}
+
+.content h1 {
+  font-size: 100px;
+  color: #fff;
+  text-align: center;
+}
+
+.content a {
+  text-decoration: none;
+  display: inline-block;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 24px;
+  border: 2px solid #fff;
+  padding: 14px 70px;
+  border-radius: 50px;
+  margin-top: 20px;
+}
