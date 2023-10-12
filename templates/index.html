@@ -1,10 +1,16 @@
-{% extends 'base.html' %} {% block title %}Logout{% endblock %}{% block
-content%}
+{% extends 'base.html' %} {% block title %}Home{% endblock %}{% block content%}
 <body>
   <div class="content">
-    <h1>GET A QUOTE TODAY!</h1>
+    {% if session["username"] == none %}
+    <h1>Get a quote today!</h1>
+    {%else%}
+    <h1>Hello, {{session["username"]}}!</h1>
+    {%endif%} {% if session["username"] == none %}
     <a href="/sign_up">Register</a>
     <a href="/login">Login</a>
+    {% else %}
+    <a href="quote">Get a quote!</a>
+    {%endif%}
   </div>
 </body>
 
