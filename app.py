@@ -1,10 +1,18 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, session
 
 app = Flask(__name__)
 app.secret_key = "5473895728547392"
 
 hardcodeUsername = "username"
 hardcodePassword = "password"
+
+class PricingModule:
+    def __init__(self):
+        pass
+    
+    def get_price_per_gallon(self):
+        hardcodePrice = 2.5
+        return hardcodePrice
 
 @app.route('/')
 def index():
@@ -59,6 +67,9 @@ def profile():
         elif len(zipcode) > 9:
             flash('Zipcode can be at most 9 digits long.', category='error')
         else:
+            session['addressOne'] = request.form.get('addressOne')
+            session['addressTwo'] = request.form.get('addressTwo')
+
             flash('Profile complete.', category='success')
 
     return render_template('profile.html')
@@ -80,9 +91,39 @@ def sign_up():
         
     return render_template('sign_up.html')
 
+pricing_module = PricingModule()
+
 @app.route('/quote', methods = ['GET', 'POST'])
 def quote():
-    return render_template('quote.html')
+    addressOne = session.get('addressOne', '')
+    addressTwo = session.get('addressTwo', '')
+    
+    if request.method == 'POST':
+        if 'addressOne' in session:
+            addressOne = session['addressOne']
+        elif 'addressTwo' in session:
+            addressTwo = session['addressTwo']
+        elif 'addressOne' in session and 'addressTwo' in session:
+            addressOne = session['addressOne']
+            addressTwo = session['addressTwo']
+        else:
+            flash('Please complete your profile first.', category='error')
+            return redirect(url_for('profile'))
+        
+        gallons = float(request.form.get('gallons'))
+        delivery_date = request.form.get('deliveryDate')
+        price_per_gallon = pricing_module.get_price_per_gallon()
+        total_amount_due = gallons * price_per_gallon
+        # print(str(gallons) + ' ' + addressOne + ' ' + addressTwo + ' ' + delivery_date + ' ' + str(price_per_gallon) + ' ' + str(total_amount_due))
+
+        if gallons <= 0:
+            flash('Please enter a valid number of gallons.', category='error')
+        else:
+            flash('Form complete.', category='success')
+
+    return render_template('quote.html',
+                           addressOne=addressOne,
+                           addressTwo=addressTwo)
 
 @app.route('/history')
 def history():
