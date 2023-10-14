@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, request, redirect, flash, ses
 app = Flask(__name__)
 app.secret_key = "5473895728547392"
 
-hardcodeUsername = "username"
+hardcodeUsername = "admin"
 hardcodePassword = "password"
 
 class User:
@@ -18,9 +18,6 @@ class User:
 
 users = []
 users.append(User(id=1, username=hardcodeUsername, password=hardcodePassword))
-global counter
-counter = 2
-print(users)
 
 class PricingModule:
     def __init__(self):
@@ -127,11 +124,11 @@ def sign_up():
             elif len(password) < 1:
                 flash('Please enter a password.', category='error')
             else:
-                flash('Registration complete.', category='success')
                 users.append(User(id=0, username=username, password=password))
-                
                 users[len(users)-1].id = len(users)
-                print(users)
+                # print(users)
+
+                flash('Registration complete.', category='success')
                 return redirect(url_for('login'))
         
         return render_template('sign_up.html')
