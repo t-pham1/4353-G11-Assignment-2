@@ -1,7 +1,40 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, session
+from flask_sqlalchemy import SQLAlchemy
+
+
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.secret_key = "5473895728547392"
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
+
+    fullName = db.Column(db.String(50))
+    addressOne = db.Column(db.String(100))
+    addressTwo = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    state = db.Column(db.String(2))
+    zipcode = db.Column(db.Integer)
+
+    quotes = db.relationship('Quote')
+
+    # def init(self, username, password):
+    #     self.username = username
+    #     self.password = password
+    # def repr(self):
+    #     return '<Username %r>' % self.username
+
+class Quote(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    gallons = db.Column(db.Integer)
+    deliveryDate = db.Column(db.String(10))
+    # may need to add other information related to this class for quote
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 hardcodeUsername = "admin"
 hardcodePassword = "password"
@@ -175,4 +208,6 @@ def history():
                            fuel_quote=pricing_module.quote_history)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
