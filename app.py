@@ -1,4 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -39,7 +41,7 @@ class Quote(db.Model):
 hardcodeUsername = "admin"
 hardcodePassword = "password"
 
-class User:
+class User1:
     def __init__(self, id, username, password):
         self.id = 1
         self.username = username
@@ -50,7 +52,7 @@ class User:
 
 
 users = []
-users.append(User(id=1, username=hardcodeUsername, password=hardcodePassword))
+users.append(User1(id=1, username=hardcodeUsername, password=hardcodePassword))
 
 class PricingModule:
     def __init__(self):
@@ -86,7 +88,7 @@ def login():
             flash('Username does not exist.', category='error')
             return render_template('login.html')
         
-        if user and user.password == password:
+        if user and user.password == password and check_password_hash(user.password, password):
             session["username"] = username
             flash('Login successful.', category='success')
             return redirect(url_for('index'))
@@ -96,7 +98,9 @@ def login():
     return render_template('login.html')
 
 @app.route('/logout')
+#@login_required
 def logout():
+ #   logout_user
     session["username"] = None
     return redirect(url_for('index'))
 
@@ -144,29 +148,33 @@ def sign_up():
         flash('You are already signed in!', category='error')
         return render_template('sign_up.html')
     if request.method == 'POST':
+        
         username = request.form.get('username')
         password = request.form.get('password')
 
-        try:
-            user = [x for x in users if x.username == username][0]  # user contains ID number
+        user = User.query.filter_by(username = username).first()
+        if user:
+            # testing user = [x for x in users if x.username == username][0]  # user contains ID number
             flash('Username already exists.', category='error')
             return render_template('sign_up.html')
-        except IndexError:
-            if len(username) < 1:
-                flash('Please enter a username.', category='error')
-            elif len(password) < 1:
+        if len(username) < 1:
+            flash('Please enter a username.', category='error')
+        elif len(password) < 1:
                 flash('Please enter a password.', category='error')
-            else:
-                users.append(User(id=0, username=username, password=password))
-                users[len(users)-1].id = len(users)
+        else:
+                #users.append(User(id=0, username=username, password=password))
+                #users[len(users)-1].id = len(users)
                 # print(users)
-
-                flash('Registration complete.', category='success')
-                return redirect(url_for('login'))
+            new_user = User(username=username, password = generate_password_hash(password, method ='sha256'))
+            db.session.add(new_user)
+            db.session.commit()
+            #login_user(new_user, remember=True)
+            flash('Registration complete.', category='success')
+            return redirect(url_for('login'))
         
         return render_template('sign_up.html')
         
-    return render_template('sign_up.html')
+    return render_template('sign_up.html', user=current_user)
 
 pricing_module = PricingModule()
 
