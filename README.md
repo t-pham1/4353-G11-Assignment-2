@@ -2,7 +2,7 @@
 
 Benjamin Tat, Christine Do, Quoc Nguyen, and Tommy Pham
 
-## Prerequisite
+## Prerequisites
 
 - `pip install flask`
 - `pip install werkzeug==2.3.0`
