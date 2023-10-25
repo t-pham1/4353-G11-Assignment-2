@@ -16,9 +16,9 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return UserCredentials.query.get(int(id))
  
-class User(db.Model, UserMixin):
+class UserCredentials(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
@@ -35,7 +35,7 @@ class ClientInformation(db.Model):
     state = db.Column(db.String(2))
     zipcode = db.Column(db.Integer)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
 
 class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,12 +44,12 @@ class FuelQuote(db.Model):
     pricePerGallon = db.Column(db.Float)
     totalAmountDue = db.Column(db.Float)
 
-    user = db.relationship('User', back_populates='quotes')
+    user = db.relationship('UserCredentials', back_populates='quotes')
 
     def __repr__(self):
         return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
 
 class PricingModule:
     def __init__(self):
@@ -75,7 +75,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = UserCredentials.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
             flash('Login successful.', category='success')
@@ -147,7 +147,7 @@ def sign_up():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(username = username).first()
+        user = UserCredentials.query.filter_by(username = username).first()
         if user:
             flash("Username already exists.", category='error')
         elif len(username) < 1:
@@ -155,7 +155,7 @@ def sign_up():
         elif len(password) < 1:
                 flash('Please enter a password.', category='error')
         else:
-            new_user = User(username=username, password = generate_password_hash(password, method ='sha256'))
+            new_user = UserCredentials(username=username, password = generate_password_hash(password, method ='sha256'))
             db.session.add(new_user)
             db.session.commit()
             flash('Registration complete.', category='success')
