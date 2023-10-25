@@ -23,6 +23,11 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
 
+    client = db.relationship('ClientInformation')
+    quotes = db.relationship('FuelQuote')
+
+class ClientInformation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     fullName = db.Column(db.String(50))
     addressOne = db.Column(db.String(100))
     addressTwo = db.Column(db.String(100))
@@ -30,15 +35,9 @@ class User(db.Model, UserMixin):
     state = db.Column(db.String(2))
     zipcode = db.Column(db.Integer)
 
-    quotes = db.relationship('Quote')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    # def init(self, username, password):
-    #     self.username = username
-    #     self.password = password
-    # def repr(self):
-    #     return '<Username %r>' % self.username
-
-class Quote(db.Model):
+class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gallons = db.Column(db.Float)
     deliveryDate = db.Column(db.String(10))
@@ -124,12 +123,17 @@ def profile():
         elif len(zipcode) > 9:
             flash('Zipcode can be at most 9 digits long.', category='error')
         else:
-            current_user.fullName = fullName
-            current_user.addressOne = addressOne
-            current_user.addressTwo = addressTwo
-            current_user.city = city
-            current_user.state = state
-            current_user.zipcode = zipcode
+            client = ClientInformation.query.filter_by(user_id=current_user.id).first()
+            if client:
+                client.fullName = fullName
+                client.addressOne = addressOne
+                client.addressTwo = addressTwo
+                client.city = city
+                client.state = state
+                client.zipcode = zipcode
+            else:
+                new_clientInfo = ClientInformation(fullName=fullName, addressOne=addressOne, addressTwo=addressTwo, city=city, state=state, zipcode=zipcode, user_id=current_user.id)
+                db.session.add(new_clientInfo)
             db.session.commit()
             session['addressOne'] = request.form.get('addressOne')
             session['addressTwo'] = request.form.get('addressTwo')
@@ -164,9 +168,11 @@ pricing_module = PricingModule()
 @app.route('/quote', methods = ['GET', 'POST'])
 @login_required
 def quote():
-    if not current_user.addressOne:
+    client = ClientInformation.query.filter_by(user_id=current_user.id).first()
+    if not client:
         flash('Please complete profile before getting a quote.', category='error')
         return redirect(url_for('profile'))
+    
     addressOne = session.get('addressOne', '')
     addressTwo = session.get('addressTwo', '')
     
