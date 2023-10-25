@@ -5,9 +5,9 @@ Benjamin Tat, Christine Do, Quoc Nguyen, and Tommy Pham
 ## Prerequisites
 
 - `pip install flask`
-- `pip install werkzeug==2.3.0`
 - `pip install flask-login`
 - `pip install sqlalchemy`
+- `pip install werkzeug==2.3.0`
 
 ## Running the Application
 
