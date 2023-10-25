@@ -40,15 +40,15 @@ class ClientInformation(db.Model):
 class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gallons = db.Column(db.Float)
-    addressOne = db.String(db.String(100))
-    addressTwo = db.String(db.String(100))
+    addressOne = db.Column(db.String(100))
+    addressTwo = db.Column(db.String(100))
     deliveryDate = db.Column(db.String(10))
     pricePerGallon = db.Column(db.Float)
     totalAmountDue = db.Column(db.Float)
 
     user = db.relationship('UserCredentials', back_populates='quotes')
 
-    def __repr__(self):
+    def repr(self):
         return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
 
     user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
@@ -196,7 +196,7 @@ def quote():
 @app.route('/history')
 @login_required
 def history():
-    return render_template('history.html', user=current_user, client=ClientInformation.query.filter_by(user_id=current_user.id).first())
+    return render_template('history.html', user=current_user)
 
 if __name__ == '__main__':
     with app.app_context():
