@@ -40,13 +40,15 @@ class ClientInformation(db.Model):
 class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gallons = db.Column(db.Float)
+    addressOne = db.Column(db.String(100))
+    addressTwo = db.Column(db.String(100))
     deliveryDate = db.Column(db.String(10))
     pricePerGallon = db.Column(db.Float)
     totalAmountDue = db.Column(db.Float)
 
     user = db.relationship('UserCredentials', back_populates='quotes')
 
-    def __repr__(self):
+    def repr(self):
         return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
 
     user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
@@ -135,8 +137,6 @@ def profile():
                 new_clientInfo = ClientInformation(fullName=fullName, addressOne=addressOne, addressTwo=addressTwo, city=city, state=state, zipcode=zipcode, user_id=current_user.id)
                 db.session.add(new_clientInfo)
             db.session.commit()
-            session['addressOne'] = request.form.get('addressOne')
-            session['addressTwo'] = request.form.get('addressTwo')
             flash('Updated profile.', category='success')
     
     return render_template('profile.html', user=current_user)
@@ -172,10 +172,7 @@ def quote():
     if not client:
         flash('Please complete profile before getting a quote.', category='error')
         return redirect(url_for('profile'))
-    
-    addressOne = session.get('addressOne', '')
-    addressTwo = session.get('addressTwo', '')
-    
+
     if request.method == 'POST':
         gallons = float(request.form.get('gallons'))
         delivery_date = request.form.get('deliveryDate')
@@ -186,28 +183,20 @@ def quote():
         if gallons <= 0:
             flash('Please enter a valid number of gallons.', category='error')
         else:
-            quote_details = {
-                'quote_id': pricing_module.quote_id,
-                'gallons': gallons,
-                'addressOne': addressOne,
-                'addressTwo': addressTwo,
-                'deliveryDate': delivery_date,
-                'pricePerGallon': price_per_gallon,
-                'totalAmountDue': total_amount_due
-            }
-            
-            pricing_module.update_quote_history(quote_details)
+            new_quote = FuelQuote(gallons=gallons, addressOne=client.addressOne, addressTwo=client.addressTwo, deliveryDate=delivery_date, pricePerGallon=price_per_gallon, totalAmountDue=total_amount_due, user_id=current_user.id)
+            db.session.add(new_quote)
+            db.session.commit()
+
             flash('Form complete.', category='success')
 
     return render_template('quote.html',
-                           addressOne=addressOne,
-                           addressTwo=addressTwo, user=current_user)
+                           addressOne=client.addressOne,
+                           addressTwo=client.addressTwo, user=current_user)
 
 @app.route('/history')
 @login_required
 def history():
-    return render_template('history.html',
-                           fuel_quote=pricing_module.quote_history, user=current_user)
+    return render_template('history.html', user=current_user)
 
 if __name__ == '__main__':
     with app.app_context():
