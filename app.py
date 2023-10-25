@@ -1,9 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, session
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
-
-
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -48,9 +46,6 @@ class FuelQuote(db.Model):
 
     user = db.relationship('UserCredentials', back_populates='quotes')
 
-    def repr(self):
-        return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
-
     user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
 
 class PricingModule:
@@ -60,7 +55,6 @@ class PricingModule:
         self.quote_history = []
     
     def get_price_per_gallon(self):
-        # hardcodePrice = 2.5
         return self.hardcodePrice
     
     def update_quote_history(self, quote_details):
@@ -77,11 +71,12 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
+        
         user = UserCredentials.query.filter_by(username=username).first()
-
         if user and check_password_hash(user.password, password):
             flash('Login successful.', category='success')
             login_user(user)
+            
             return redirect(url_for('index'))
         elif user and not check_password_hash(user.password, password):
             flash('Incorrect password.', category='error')
@@ -95,6 +90,7 @@ def login():
 def logout():
     logout_user()
     flash('Successfully signed out!', category='success')
+    
     return redirect(url_for('index'))
 
 @app.route('/profile', methods = ['GET', 'POST'])
@@ -134,8 +130,14 @@ def profile():
                 client.state = state
                 client.zipcode = zipcode
             else:
-                new_clientInfo = ClientInformation(fullName=fullName, addressOne=addressOne, addressTwo=addressTwo, city=city, state=state, zipcode=zipcode, user_id=current_user.id)
+                new_clientInfo = ClientInformation(fullName=fullName,
+                                                   addressOne=addressOne,
+                                                   addressTwo=addressTwo,
+                                                   city=city, state=state,
+                                                   zipcode=zipcode,
+                                                   user_id=current_user.id)
                 db.session.add(new_clientInfo)
+                
             db.session.commit()
             flash('Updated profile.', category='success')
     
@@ -155,10 +157,13 @@ def sign_up():
         elif len(password) < 1:
                 flash('Please enter a password.', category='error')
         else:
-            new_user = UserCredentials(username=username, password = generate_password_hash(password, method ='sha256'))
+            new_user = UserCredentials(username=username,
+                                       password = generate_password_hash(password, method ='sha256'))
+            
             db.session.add(new_user)
             db.session.commit()
             flash('Registration complete.', category='success')
+            
             return redirect(url_for('login'))
         
     return render_template('sign_up.html', user=current_user)
@@ -178,12 +183,18 @@ def quote():
         delivery_date = request.form.get('deliveryDate')
         price_per_gallon = pricing_module.get_price_per_gallon()
         total_amount_due = gallons * price_per_gallon
-        # print(str(gallons) + ' ' + addressOne + ' ' + addressTwo + ' ' + delivery_date + ' ' + str(price_per_gallon) + ' ' + str(total_amount_due))
 
         if gallons <= 0:
             flash('Please enter a valid number of gallons.', category='error')
         else:
-            new_quote = FuelQuote(gallons=gallons, addressOne=client.addressOne, addressTwo=client.addressTwo, deliveryDate=delivery_date, pricePerGallon=price_per_gallon, totalAmountDue=total_amount_due, user_id=current_user.id)
+            new_quote = FuelQuote(gallons=gallons,
+                                  addressOne=client.addressOne,
+                                  addressTwo=client.addressTwo,
+                                  deliveryDate=delivery_date,
+                                  pricePerGallon=price_per_gallon,
+                                  totalAmountDue=total_amount_due,
+                                  user_id=current_user.id)
+            
             db.session.add(new_quote)
             db.session.commit()
 
@@ -191,12 +202,14 @@ def quote():
 
     return render_template('quote.html',
                            addressOne=client.addressOne,
-                           addressTwo=client.addressTwo, user=current_user)
+                           addressTwo=client.addressTwo,
+                           user=current_user)
 
 @app.route('/history')
 @login_required
 def history():
-    return render_template('history.html', user=current_user)
+    return render_template('history.html',
+                           user=current_user)
 
 if __name__ == '__main__':
     with app.app_context():
