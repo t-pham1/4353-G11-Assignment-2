@@ -32,9 +32,15 @@ class User(db.Model):
 
 class Quote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    gallons = db.Column(db.Integer)
+    gallons = db.Column(db.Float)
     deliveryDate = db.Column(db.String(10))
-    # may need to add other information related to this class for quote
+    pricePerGallon = db.Column(db.Float)
+    totalAmountDue = db.Column(db.Float)
+
+    user = db.relationship('User', back_populates='quotes')
+
+    def __repr__(self):
+        return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
@@ -166,9 +172,9 @@ def sign_up():
                 #users[len(users)-1].id = len(users)
                 # print(users)
             new_user = User(username=username, password = generate_password_hash(password, method ='sha256'))
-            print(password)
             users.append(new_user)
-            # db.session.add(new_user)
+            users[len(users)-1].id = len(users)
+            db.session.add(new_user)
             # db.session.commit()
             #login_user(new_user, remember=True)
             flash('Registration complete.', category='success')
@@ -197,13 +203,13 @@ def quote():
             flash('Please enter a valid number of gallons.', category='error')
         else:
             quote_details = {
-                'quote_id': None,
+                'quote_id': pricing_module.quote_id,
                 'gallons': gallons,
                 'addressOne': addressOne,
                 'addressTwo': addressTwo,
-                'delivery_date': delivery_date,
-                'price_per_gallon': price_per_gallon,
-                'total_amount_due': total_amount_due
+                'deliveryDate': delivery_date,
+                'pricePerGallon': price_per_gallon,
+                'totalAmountDue': total_amount_due
             }
             
             pricing_module.update_quote_history(quote_details)
