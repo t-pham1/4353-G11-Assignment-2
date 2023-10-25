@@ -1,32 +1,27 @@
-{% extends 'base.html' %} {% block title %}History{% endblock %}
-
-{% block content %}
-    <!-- Fuel Quote History -->
-    <div class="container py-3">
-    <h1 align="center"><strong>Fuel Quote History</strong></h1>
-      <table class="table">
-         <tr>
-            <th>Quote ID</th>
-	         <th>Gallons Requested</th>
-            <th>Delivery Address 1</th>
-            <th>Delivery Address 2</th>
-            <th>Delivery Date</th>
-            <th>Price Per Gallon</th>
-            <th>Total Amount Due</th>
-         </tr>
-         {% if fuel_quote %}
-         {% for f in fuel_quote %}
-         <tr>
-            <td>{{ f.quote_id }}</td>
-            <td>{{ f.gallons }}</td>
-            <td>{{ f.addressOne }}</td>
-            <td>{{ f.addressTwo }}</td>
-            <td>{{ f.deliveryDate }}</td>
-            <td>{{ f.pricePerGallon }}</td>
-            <td>{{ f.totalAmountDue }}</td>
-         </tr>
-         {% endfor %}
-         {% endif %}
-    </table>
-    </div>
+{% extends 'base.html' %} {% block title %}History{% endblock %} {% block
+content %}
+<!-- Fuel Quote History -->
+<div class="container py-3">
+  <h1 align="center"><strong>Fuel Quote History</strong></h1>
+  <table class="table">
+    <tr>
+      <th>Gallons Requested</th>
+      <th>Delivery Address 1</th>
+      <th>Delivery Address 2</th>
+      <th>Delivery Date</th>
+      <th>Price Per Gallon</th>
+      <th>Total Amount Due</th>
+    </tr>
+    {% for quote in user.quotes %}
+    <tr>
+      <td>{{ quote.gallons }}</td>
+      <td>{{ client.addressOne }}</td>
+      <td>{{ client.addressTwo }}</td>
+      <td>{{ quote.deliveryDate }}</td>
+      <td>{{ quote.pricePerGallon }}</td>
+      <td>{{ quote.totalAmountDue }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}
