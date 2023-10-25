@@ -16,13 +16,18 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    return UserCredentials.query.get(int(id))
  
-class User(db.Model, UserMixin):
+class UserCredentials(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
 
+    client = db.relationship('ClientInformation')
+    quotes = db.relationship('FuelQuote')
+
+class ClientInformation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     fullName = db.Column(db.String(50))
     addressOne = db.Column(db.String(100))
     addressTwo = db.Column(db.String(100))
@@ -30,27 +35,21 @@ class User(db.Model, UserMixin):
     state = db.Column(db.String(2))
     zipcode = db.Column(db.Integer)
 
-    quotes = db.relationship('Quote')
+    user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
 
-    # def init(self, username, password):
-    #     self.username = username
-    #     self.password = password
-    # def repr(self):
-    #     return '<Username %r>' % self.username
-
-class Quote(db.Model):
+class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gallons = db.Column(db.Float)
     deliveryDate = db.Column(db.String(10))
     pricePerGallon = db.Column(db.Float)
     totalAmountDue = db.Column(db.Float)
 
-    user = db.relationship('User', back_populates='quotes')
+    user = db.relationship('UserCredentials', back_populates='quotes')
 
     def __repr__(self):
         return f'<Quote {self.id}, Gallons: {self.gallons}, Delivery Date: {self.deliveryDate}>'
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey(UserCredentials.id))
 
 class PricingModule:
     def __init__(self):
@@ -76,7 +75,7 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
+        user = UserCredentials.query.filter_by(username=username).first()
 
         if user and check_password_hash(user.password, password):
             flash('Login successful.', category='success')
@@ -124,12 +123,17 @@ def profile():
         elif len(zipcode) > 9:
             flash('Zipcode can be at most 9 digits long.', category='error')
         else:
-            current_user.fullName = fullName
-            current_user.addressOne = addressOne
-            current_user.addressTwo = addressTwo
-            current_user.city = city
-            current_user.state = state
-            current_user.zipcode = zipcode
+            client = ClientInformation.query.filter_by(user_id=current_user.id).first()
+            if client:
+                client.fullName = fullName
+                client.addressOne = addressOne
+                client.addressTwo = addressTwo
+                client.city = city
+                client.state = state
+                client.zipcode = zipcode
+            else:
+                new_clientInfo = ClientInformation(fullName=fullName, addressOne=addressOne, addressTwo=addressTwo, city=city, state=state, zipcode=zipcode, user_id=current_user.id)
+                db.session.add(new_clientInfo)
             db.session.commit()
             session['addressOne'] = request.form.get('addressOne')
             session['addressTwo'] = request.form.get('addressTwo')
@@ -143,7 +147,7 @@ def sign_up():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(username = username).first()
+        user = UserCredentials.query.filter_by(username = username).first()
         if user:
             flash("Username already exists.", category='error')
         elif len(username) < 1:
@@ -151,7 +155,7 @@ def sign_up():
         elif len(password) < 1:
                 flash('Please enter a password.', category='error')
         else:
-            new_user = User(username=username, password = generate_password_hash(password, method ='sha256'))
+            new_user = UserCredentials(username=username, password = generate_password_hash(password, method ='sha256'))
             db.session.add(new_user)
             db.session.commit()
             flash('Registration complete.', category='success')
@@ -164,9 +168,11 @@ pricing_module = PricingModule()
 @app.route('/quote', methods = ['GET', 'POST'])
 @login_required
 def quote():
-    if not current_user.addressOne:
+    client = ClientInformation.query.filter_by(user_id=current_user.id).first()
+    if not client:
         flash('Please complete profile before getting a quote.', category='error')
         return redirect(url_for('profile'))
+    
     addressOne = session.get('addressOne', '')
     addressTwo = session.get('addressTwo', '')
     

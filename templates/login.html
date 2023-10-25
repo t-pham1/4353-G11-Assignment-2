@@ -1,95 +1,95 @@
 {% extends 'base.html' %} {% block title %}Login{% endblock %}{% block content
-  %}
-  
-  <!-- Style embedded within the document -->
-  <style>
-    /* Styling for the body element */
-    /* body {
+%}
+
+<!-- Style embedded within the document -->
+<style>
+  /* Styling for the body element */
+  /* body {
       font-family: Verdana, Geneva, Tahoma, sans-serif;
     } */
-  
-    /* Styling for the h1 element */
-    h1 {
-      text-align: center;
-    }
-  
-    /* Styling for the form element */
-    form {
-      padding-left: 42%;
-      padding-top: 1%;
-    }
-  
-    /* Styling for the input elements */
-    input {
-      font-weight: bold;
-      padding: 5px;
-      margin-right: 5px;
-      border-radius: 2px;
-      width: 200px;
-    }
-  
-    /* Styling for the submit button */
-    #submit {
-      width: 214px;
-      font-size: large;
-      background-color: black;
-      color: white;
-    }
-  
-    /* Hover effect styling for the submit button */
-    #submit:hover {
-      background-color: white;
-      color: black;
-      cursor: pointer;
-      border-color: black;
-    }
-  
-    /* Styling for the login details section */
-    #login_details {
-      text-align: center;
-      font-weight: bold;
-    }
-  
-    /* Styling for the span element */
-    span {
-      display: block;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
-  
-  <body>
-    <!-- Heading for the login page -->
-    <h1>Log In</h1>
-    <!-- Horizontal line -->
-    <hr size="3" />
-  
-    <!-- Begin the login form -->
-    <form action="login" method="POST">
-      <!-- Input field for the email -->
-      <input
-        type="text"
-        name="username"
-        id="username"
-        placeholder="Enter Username"
-        required
-      />
-      <br /><br />
-      <!-- Input field for the password -->
-      <input
-        type="password"
-        name="password"
-        id="password"
-        placeholder="Enter Password"
-        required
-      />
-      <br /><br />
-      <!-- Submit button for the form -->
-      <input type="submit" name="submit" id="submit" value="LOGIN" />
-    </form>
-  
-    <!-- Registration link for new users -->
-    <span>New Here? <a href="/sign_up">Register Here</a></span>
-  </body>
-  
-  {% endblock %}
+
+  /* Styling for the h1 element */
+  h1 {
+    text-align: center;
+  }
+
+  /* Styling for the form element */
+  form {
+    padding-left: 42%;
+    padding-top: 1%;
+  }
+
+  /* Styling for the input elements */
+  input {
+    font-weight: bold;
+    padding: 5px;
+    margin-right: 5px;
+    border-radius: 2px;
+    width: 200px;
+  }
+
+  /* Styling for the submit button */
+  #submit {
+    width: 214px;
+    font-size: large;
+    background-color: black;
+    color: white;
+  }
+
+  /* Hover effect styling for the submit button */
+  #submit:hover {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+    border-color: black;
+  }
+
+  /* Styling for the login details section */
+  #login_details {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  /* Styling for the span element */
+  span {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+</style>
+
+<body>
+  <!-- Heading for the login page -->
+  <h1>Log In</h1>
+  <!-- Horizontal line -->
+  <hr size="3" />
+
+  <!-- Begin the login form -->
+  <form action="login" method="POST">
+    <!-- Input field for the email -->
+    <input
+      type="text"
+      name="username"
+      id="username"
+      placeholder="Enter Username"
+      required
+    />
+    <br /><br />
+    <!-- Input field for the password -->
+    <input
+      type="password"
+      name="password"
+      id="password"
+      placeholder="Enter Password"
+      required
+    />
+    <br /><br />
+    <!-- Submit button for the form -->
+    <input type="submit" name="submit" id="submit" value="LOGIN" />
+  </form>
+
+  <!-- Registration link for new users -->
+  <span>New Here? <a href="/sign_up">Register Here</a></span>
+</body>
+
+{% endblock %}
