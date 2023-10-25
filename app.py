@@ -1,6 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import login_user, login_required, logout_user, current_user
+# from flask_login import login_user, login_required, logout_user, current_user
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -88,7 +88,7 @@ def login():
             flash('Username does not exist.', category='error')
             return render_template('login.html')
         
-        if user and user.password == password and check_password_hash(user.password, password):
+        if user and check_password_hash(user.password, password):
             session["username"] = username
             flash('Login successful.', category='success')
             return redirect(url_for('index'))
@@ -166,15 +166,18 @@ def sign_up():
                 #users[len(users)-1].id = len(users)
                 # print(users)
             new_user = User(username=username, password = generate_password_hash(password, method ='sha256'))
-            db.session.add(new_user)
-            db.session.commit()
+            print(password)
+            users.append(new_user)
+            # db.session.add(new_user)
+            # db.session.commit()
             #login_user(new_user, remember=True)
             flash('Registration complete.', category='success')
             return redirect(url_for('login'))
         
         return render_template('sign_up.html')
         
-    return render_template('sign_up.html', user=current_user)
+    # return render_template('sign_up.html', user=current_user)
+    return render_template('sign_up.html')
 
 pricing_module = PricingModule()
 
