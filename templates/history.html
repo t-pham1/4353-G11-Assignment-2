@@ -7,7 +7,7 @@
       <table class="table">
          <tr>
             <th>Quote ID</th>
-	        <th>Gallons Requested</th>
+	         <th>Gallons Requested</th>
             <th>Delivery Address 1</th>
             <th>Delivery Address 2</th>
             <th>Delivery Date</th>
@@ -17,7 +17,7 @@
          {% if fuel_quote %}
          {% for f in fuel_quote %}
          <tr>
-            <td>{{ f.id }}</td>
+            <td>{{ f.quote_id }}</td>
             <td>{{ f.gallons }}</td>
             <td>{{ f.addressOne }}</td>
             <td>{{ f.addressTwo }}</td>
