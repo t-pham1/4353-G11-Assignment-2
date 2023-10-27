@@ -44,7 +44,6 @@ class TestProfileRoute(TestCase):
                                                         city=city,
                                                         state=state,
                                                         zipcode=zipcode), follow_redirects=True)
-
         self.assertIn(b'Updated profile.', response.data)
 
 if __name__ == '__main__':

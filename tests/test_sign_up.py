@@ -38,7 +38,6 @@ class TestSignupRoute(TestCase):
 
         response = self.client.post('/sign_up', data=dict(username=username,
                                                password=password), follow_redirects=True)
-        
         self.assertIn(b'Registration complete.', response.data)
     
     def test_sign_up_with_existing_username(self):
@@ -47,7 +46,6 @@ class TestSignupRoute(TestCase):
 
         response = self.client.post('/sign_up', data=dict(username=username,
                                                password=password), follow_redirects=True)
-        
         self.assertIn(b'Username already exists.', response.data)
 
 if __name__ == '__main__':

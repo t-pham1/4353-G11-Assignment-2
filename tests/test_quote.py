@@ -49,7 +49,6 @@ class TestQuoteRoute(TestCase):
         
         response = self.client.post('/quote', data=dict(gallons=gallons,
                                              deliveryDate=deliveryDate), follow_redirects=True)
-        
         self.assertIn(addressOne.encode(), response.data)
         self.assertIn(addressTwo.encode(), response.data)
         self.assertIn(b'Form complete.', response.data)
