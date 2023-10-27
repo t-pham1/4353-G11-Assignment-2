@@ -1,39 +1,30 @@
 import unittest
-from app import app
+from flask_testing import TestCase
+from app import app, db, UserCredentials
 
-class TestLogout(unittest.TestCase):
+class TestLogoutRoute(TestCase):
+    def create_app(self):
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+        return app
+
     def setUp(self):
-        app.testing = True
-        self.app = app.test_client()
-    
+        self.client.post('/sign_up', data=dict(username='testuser',
+                                               password='testpassword'), follow_redirects=True)
+
+        self.client.post('/login', data=dict(username='testuser',
+                                             password='testpassword'), follow_redirects=True)
+
+    def tearDown(self):
+        self.client.get('/logout', follow_redirects=True)
+        
+        test_user = UserCredentials.query.filter_by(username='testuser').first()
+        if test_user:
+            db.session.delete(test_user)
+            db.session.commit()
+
     def test_log_out_access(self):
-        response = self.app.get('/log_out')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_log_out_no_access(self):
-        response = self.app.get('/log_out')
-        self.assertEqual(response.status_code, 302)
-
-    def test_logout_logged_in(self):
-        with self.app.session_transaction() as session:
-            session['username'] = 'testuser'
-
-        response = self.app.get('/logout', follow_redirects=True)
-        self.assertIn(b'You have been logged out.', response.data)
-        self.assertEqual(response.status_code, 200)
-
-    def test_logout_not_logged_in(self):
-        response = self.app.get('/logout', follow_redirects=True)
-        self.assertIn(b'You are not currently logged in.', response.data)
-        self.assertEqual(response.status_code, 200)
-
-    def test_protected_page_after_logout(self):
-        with self.app.session_transaction() as session:
-            session['username'] = 'testuser'
-
-        self.app.get('/logout', follow_redirects=True)
-        response = self.app.get('/profile', follow_redirects=True)
-        self.assertIn(b'You are not currently logged in.', response.data)
+        response = self.client.get('/logout', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':

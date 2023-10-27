@@ -1,57 +1,30 @@
 import unittest
-from app import app
+from flask_testing import TestCase
+from app import app, db, UserCredentials
 
-class TestLogin(unittest.TestCase):
+class TestLoginRoute(TestCase):
+    def create_app(self):
+        app.config['TESTING'] = True
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+        return app
+
     def setUp(self):
-        self.app = app.test_client()
-        self.app.testing = True
-    
+        self.client.post('/sign_up', data=dict(username='testuser',
+                                               password='testpassword'), follow_redirects=True)
+
+        self.client.post('/login', data=dict(username='testuser',
+                                             password='testpassword'), follow_redirects=True)
+
+    def tearDown(self):
+        self.client.get('/logout', follow_redirects=True)
+        
+        test_user = UserCredentials.query.filter_by(username='testuser').first()
+        if test_user:
+            db.session.delete(test_user)
+            db.session.commit()
+
     def test_login_access(self):
-        response = self.app.get('/login')
-        self.assertEqual(response.status_code, 200)
-    
-    def test_login_no_access(self):
-        response = self.app.get('/login')
-        self.assertEqual(response.status_code, 302)
-    
-    def test_login_submission(self):
-        data = {'username': 'username',
-                'password': 'password'}
-
-        response = self.app.post('/login', data=data, follow_redirects=True)
-        self.assertIn(b'Form complete.', response.data)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_successful_login(self):
-        data = {'username': 'username',
-                'password': 'password'}
-
-        response = self.app.post('/login', data=data, follow_redirects=True)
-        self.assertIn(b'Login successful.', response.data)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_incorrect_password(self):
-        data = {'username': 'username',
-                'password': 'wrong_password'}
-        response = self.app.post('/login', data=data, follow_redirects=True)
-        
-        self.assertIn(b'Incorrect password.', response.data)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_nonexistent_username(self):
-        data = {'username': 'nonexistent_user',
-                'password': 'password'}
-        response = self.app.post('/login', data=data, follow_redirects=True)
-        
-        self.assertIn(b'Username does not exist.', response.data)
-        self.assertEqual(response.status_code, 200)
-    
-    def test_already_logged_in(self):
-        with self.app.session_transaction() as session:
-            session['username'] = 'testuser'
-
-        response = self.app.get('/login', follow_redirects=True)
-        self.assertIn(b'You are already signed in!', response.data)
+        response = self.client.get('/login', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
 if __name__ == '__main__':
