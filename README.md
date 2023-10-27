@@ -8,6 +8,7 @@ Benjamin Tat, Christine Do, Quoc Nguyen, and Tommy Pham
 - `pip install flask-login`
 - `pip install sqlalchemy`
 - `pip install werkzeug==2.3.7`
+- `pip install flask_testing`
 
 ## Running the Application
 
