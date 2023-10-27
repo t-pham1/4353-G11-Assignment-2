@@ -9,18 +9,14 @@ class TestProfileRoute(TestCase):
         return app
 
     def setUp(self):
-        self.client.post('/sign_up', data=dict(username='testuser',
-                                               password='testpassword'), follow_redirects=True)
+        username = 'testuser'
+        password = 'testpassword'
 
-        self.client.post('/login', data=dict(username='testuser',
-                                             password='testpassword'), follow_redirects=True)
-        
-        self.client.post('/profile', data=dict(fullName='testuser',
-                                                        addressOne='123 St',
-                                                        addressTwo='345 Dr',
-                                                        city='Houston',
-                                                        state='TX',
-                                                        zipcode='77092'), follow_redirects=True)
+        self.client.post('/sign_up', data=dict(username=username,
+                                               password=password), follow_redirects=True)
+
+        self.client.post('/login', data=dict(username=username,
+                                             password=password), follow_redirects=True)
 
     def tearDown(self):
         self.client.get('/logout', follow_redirects=True)
@@ -33,6 +29,23 @@ class TestProfileRoute(TestCase):
     def test_profile_access(self):
         response = self.client.get('/profile', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+    
+    def test_profile_completed_successfully(self):
+        fullName = 'testuser'
+        addressOne = '123 St'
+        addressTwo = '345 Dr'
+        city = 'Houston'
+        state = 'TX'
+        zipcode = '77092'
+
+        response = self.client.post('/profile', data=dict(fullName=fullName,
+                                                        addressOne=addressOne,
+                                                        addressTwo=addressTwo,
+                                                        city=city,
+                                                        state=state,
+                                                        zipcode=zipcode), follow_redirects=True)
+
+        self.assertIn(b'Updated profile.', response.data)
 
 if __name__ == '__main__':
     unittest.main()

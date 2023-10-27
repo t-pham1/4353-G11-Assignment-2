@@ -9,11 +9,14 @@ class TestLogoutRoute(TestCase):
         return app
 
     def setUp(self):
-        self.client.post('/sign_up', data=dict(username='testuser',
-                                               password='testpassword'), follow_redirects=True)
+        username = 'testuser'
+        password = 'testpassword'
 
-        self.client.post('/login', data=dict(username='testuser',
-                                             password='testpassword'), follow_redirects=True)
+        self.client.post('/sign_up', data=dict(username=username,
+                                               password=password), follow_redirects=True)
+
+        self.client.post('/login', data=dict(username=username,
+                                             password=password), follow_redirects=True)
 
     def tearDown(self):
         self.client.get('/logout', follow_redirects=True)
@@ -23,9 +26,9 @@ class TestLogoutRoute(TestCase):
             db.session.delete(test_user)
             db.session.commit()
 
-    def test_log_out_access(self):
+    def test_log_out(self):
         response = self.client.get('/logout', follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Successfully signed out!', response.data)
 
 if __name__ == '__main__':
     unittest.main()
