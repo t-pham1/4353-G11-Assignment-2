@@ -133,7 +133,8 @@ def profile():
                 new_clientInfo = ClientInformation(fullName=fullName,
                                                    addressOne=addressOne,
                                                    addressTwo=addressTwo,
-                                                   city=city, state=state,
+                                                   city=city,
+                                                   state=state,
                                                    zipcode=zipcode,
                                                    user_id=current_user.id)
                 db.session.add(new_clientInfo)
@@ -158,7 +159,7 @@ def sign_up():
                 flash('Please enter a password.', category='error')
         else:
             new_user = UserCredentials(username=username,
-                                       password = generate_password_hash(password, method ='sha256'))
+                                       password = generate_password_hash(password, method ='scrypt'))
             
             db.session.add(new_user)
             db.session.commit()
@@ -208,8 +209,10 @@ def quote():
 @app.route('/history')
 @login_required
 def history():
+    quote_history = FuelQuote.query.filter_by(user_id=current_user.id).order_by(FuelQuote.deliveryDate).all()
     return render_template('history.html',
-                           user=current_user)
+                           user=current_user,
+                           quote_history=quote_history)
 
 if __name__ == '__main__':
     with app.app_context():
