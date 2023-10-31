@@ -2,6 +2,8 @@ import unittest
 from flask_testing import TestCase
 from app import app, db, UserCredentials, PricingModule
 
+#test
+
 class TestHistoryRoute(TestCase):
     def create_app(self):
         app.config['TESTING'] = True
