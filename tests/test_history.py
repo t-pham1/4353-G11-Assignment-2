@@ -2,7 +2,7 @@ import unittest
 from flask_testing import TestCase
 from app import app, db, UserCredentials, PricingModule
 
-#test
+#test1
 
 class TestHistoryRoute(TestCase):
     def create_app(self):
