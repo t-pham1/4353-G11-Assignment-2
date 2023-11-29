@@ -50,17 +50,35 @@ class FuelQuote(db.Model):
 
 class PricingModule:
     def __init__(self):
-        self.hardcodePrice = 2.5
+        self.refinery_price = 1.5
         self.quote_id = 1
         self.quote_history = []
     
-    def get_price_per_gallon(self):
-        return self.hardcodePrice
+    def get_margin(self, gallons, state, has_history):
+        location_factor = 0.02 if state == 'TX' else 0.04
+        history_factor = 0.01 if has_history else 0.00
+        gallons_factor = 0.02 if gallons > 1000 else 0.03
+        profit_factor = 0.1
+
+        print(f"Test: Location Factor: {location_factor}, History Factor: {history_factor}, Gallons Factor: {gallons_factor}, Profit Factor: {profit_factor}")
+
+
+        margin = self.refinery_price * (location_factor - history_factor + gallons_factor + profit_factor)
+
+        return margin
+    
+    def get_price_per_gallon(self, gallons, state, has_history):
+        margin = self.get_margin(gallons, state, has_history)
+        price_per_gallon = self.refinery_price + margin
+
+        return price_per_gallon
     
     def update_quote_history(self, quote_details):
         quote_details['quote_id'] = self.quote_id
         self.quote_id += 1
         self.quote_history.append(quote_details)
+
+pricing_module = PricingModule()
 
 @app.route('/')
 def index():
@@ -169,8 +187,6 @@ def sign_up():
         
     return render_template('sign_up.html', user=current_user)
 
-pricing_module = PricingModule()
-
 @app.route('/quote', methods = ['GET', 'POST'])
 @login_required
 def quote():
@@ -182,12 +198,17 @@ def quote():
     if request.method == 'POST':
         gallons = float(request.form.get('gallons'))
         delivery_date = request.form.get('deliveryDate')
-        price_per_gallon = pricing_module.get_price_per_gallon()
+
+        has_history = bool(pricing_module.quote_history)
+        margin = pricing_module.get_margin(gallons, client.state, has_history)
+        price_per_gallon = pricing_module.get_price_per_gallon(gallons, client.state, has_history)
+
         total_amount_due = gallons * price_per_gallon
 
         if gallons <= 0:
             flash('Please enter a valid number of gallons.', category='error')
         else:
+            # print(f"Test: Gallons: {gallons}, Margin: {margin}, Price per Gallon: {price_per_gallon}, Total Amount Due: {total_amount_due}")
             new_quote = FuelQuote(gallons=gallons,
                                   addressOne=client.addressOne,
                                   addressTwo=client.addressTwo,
