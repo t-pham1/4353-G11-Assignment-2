@@ -60,7 +60,7 @@ class PricingModule:
         gallons_factor = 0.02 if gallons > 1000 else 0.03
         profit_factor = 0.1
 
-        print(f"Test: Location Factor: {location_factor}, History Factor: {history_factor}, Gallons Factor: {gallons_factor}, Profit Factor: {profit_factor}")
+        #print(f"Test: Location Factor: {location_factor}, History Factor: {history_factor}, Gallons Factor: {gallons_factor}, Profit Factor: {profit_factor}")
 
 
         margin = self.refinery_price * (location_factor - history_factor + gallons_factor + profit_factor)
@@ -199,7 +199,7 @@ def quote():
         gallons = float(request.form.get('gallons'))
         delivery_date = request.form.get('deliveryDate')
 
-        has_history = bool(pricing_module.quote_history)
+        has_history = bool(current_user.quotes)
         margin = pricing_module.get_margin(gallons, client.state, has_history)
         price_per_gallon = pricing_module.get_price_per_gallon(gallons, client.state, has_history)
 
