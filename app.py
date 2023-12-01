@@ -60,9 +60,6 @@ class PricingModule:
         gallons_factor = 0.02 if gallons > 1000 else 0.03
         profit_factor = 0.1
 
-        #print(f"Test: Location Factor: {location_factor}, History Factor: {history_factor}, Gallons Factor: {gallons_factor}, Profit Factor: {profit_factor}")
-
-
         margin = self.refinery_price * (location_factor - history_factor + gallons_factor + profit_factor)
 
         return margin
@@ -210,7 +207,6 @@ def quote():
         if delivery_date == '':
             flash('Please enter a delivery date.', category='error')
         else:
-            # print(f"Test: Gallons: {gallons}, Margin: {margin}, Price per Gallon: {price_per_gallon}, Total Amount Due: {total_amount_due}")
             new_quote = FuelQuote(gallons=gallons,
                                   addressOne=client.addressOne,
                                   addressTwo=client.addressTwo,
@@ -241,7 +237,6 @@ def history():
 @login_required
 def get_quote():
     gallons = float(request.form.get('gallons'))
-    # Extract other necessary data like delivery date, etc.
 
     client = ClientInformation.query.filter_by(user_id=current_user.id).first()
     if client:
@@ -256,5 +251,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True) 
-
-#comment

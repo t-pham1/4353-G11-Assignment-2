@@ -50,24 +50,18 @@
             name="deliveryDate"
         />
       </div>
-    <!-- Suggested Price and Total Amount fields (read-only) -->
     <div class="form-group">
         <label for="pricePerGallon">Price Per Gallon</label>
         <input type="number" class="form-control" id="pricePerGallon" name="pricePerGallon" 
-        placeholder="TBD (when pricing module is finished)"
         readonly>
     </div>
     <div class="form-group">
         <label for="totalAmountDue">Total Amount Due</label>
         <input type="number" class="form-control" id="totalAmountDue" name="totalAmountDue" 
-        placeholder="TBD (when pricing module is finished) [Gallons * Price Per Gallon]"
         readonly>
     </div>
 
-    <!-- Get Quote Button -->
     <button type="button" id="getQuoteButton" class="btn btn-secondary" onclick="getQuote()">Get Quote</button>
-
-    <!-- Submit Button -->
     <input type="submit" class="btn btn-primary" value="Submit Quote" disabled id="submitQuoteButton">
 </form>
 
@@ -80,15 +74,14 @@ function getQuote() {
     .then(response => response.json())
     .then(data => {
         if (data.error) {
-            alert(data.error); // Handle error
+            alert(data.error);
         } else {
             document.getElementById('pricePerGallon').value = data.pricePerGallon;
             document.getElementById('totalAmountDue').value = data.totalAmountDue;
-            document.getElementById('submitQuoteButton').disabled = false; // Enable 'Submit Quote' button
+            document.getElementById('submitQuoteButton').disabled = false;
         }
     })
     .catch(error => console.error('Error:', error));
 }
 </script>
 {% endblock %}
-
