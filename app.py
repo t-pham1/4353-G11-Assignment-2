@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, flash, session
+from flask import Flask, render_template, url_for, request, redirect, flash, session, jsonify
 from flask_login import UserMixin, login_user, login_required, logout_user, current_user, LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -234,6 +234,21 @@ def history():
     return render_template('history.html',
                            user=current_user,
                            quote_history=quote_history)
+
+@app.route('/get_quote', methods=['POST'])
+@login_required
+def get_quote():
+    gallons = float(request.form.get('gallons'))
+    # Extract other necessary data like delivery date, etc.
+
+    client = ClientInformation.query.filter_by(user_id=current_user.id).first()
+    if client:
+        has_history = bool(current_user.quotes)
+        price_per_gallon = pricing_module.get_price_per_gallon(gallons, client.state, has_history)
+        total_amount_due = gallons * price_per_gallon
+        return jsonify({'pricePerGallon': price_per_gallon, 'totalAmountDue': total_amount_due})
+    else:
+        return jsonify({'error': 'Client information not found'}), 400
 
 if __name__ == '__main__':
     with app.app_context():
