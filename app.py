@@ -207,6 +207,8 @@ def quote():
 
         if gallons <= 0:
             flash('Please enter a valid number of gallons.', category='error')
+        if delivery_date == '':
+            flash('Please enter a delivery date.', category='error')
         else:
             # print(f"Test: Gallons: {gallons}, Margin: {margin}, Price per Gallon: {price_per_gallon}, Total Amount Due: {total_amount_due}")
             new_quote = FuelQuote(gallons=gallons,
@@ -253,4 +255,6 @@ def get_quote():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True) 
+
+#comment
