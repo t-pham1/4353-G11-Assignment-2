@@ -1,76 +1,94 @@
-{% extends 'base.html' %} {% block title %}Fuel Quote Form{% endblock %} {% block
-  content %}
-  </br>
-  <h2 align="center"><strong>Fuel Quote Form</strong></h2>
-  <form method="POST" action="{{ url_for('quote') }}">
+{% extends 'base.html' %} 
+{% block title %}Fuel Quote Form{% endblock %} 
+{% block content %}
+<br>
+<h2 align="center"><strong>Fuel Quote Form</strong></h2>
+<form method="POST" action="{{ url_for('quote') }}" id="quoteForm">
     <h5 align="center">
-      Fields marked with
-      a red star are mandatory.
+      Fields marked with a red star are mandatory.
     </h5>
+
     <div class="form-group">
-      <label class="required-field" for="gallons">Gallons Requested</label>
-      <input
-        type="number"
-        class="form-control"
-        id="gallons"
-        name="gallons"
-        placeholder="Enter Number of Gallons"
-        required
-      />
-    </div>
-    <div class="form-group">
-      <label for="addressOne">Delivery Address 1</label>
-      <input
-          type="text"
-          class="form-control"
-          id="addressOne"
-          name="addressOne"
-          value="{{ addressOne }}"
-          readonly
-      />
-    </div>
-    <div class="form-group">
-      <label for="addressTwo">Delivery Address 2</label>
-      <input
-          type="text"
-          class="form-control"
-          id="addressTwo"
-          name="addressTwo"
-          value="{{ addressTwo }}"
-          readonly
-          />
-    </div>
-    <div class="form-group">
-      <label for="deliveryDate">Delivery Date</label>
-      <input
-          type="date"
-          class="form-control"
-          id="deliveryDate"
-          name="deliveryDate"
-      />
-    </div>
-    <div class="form-group">
-      <label for="pricePerGallon">Price Per Gallon</label>
-      <input
+        <label class="required-field" for="gallons">Gallons Requested</label>
+        <input
           type="number"
           class="form-control"
-          id="pricePerGallon"
-          name="pricePerGallon"
-          placeholder="TBD (when pricing module is finished)"
-          readonly
-          />
+          id="gallons"
+          name="gallons"
+          placeholder="Enter Number of Gallons"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="addressOne">Delivery Address 1</label>
+        <input
+            type="text"
+            class="form-control"
+            id="addressOne"
+            name="addressOne"
+            value="{{ addressOne }}"
+            readonly
+        />
+      </div>
+      <div class="form-group">
+        <label for="addressTwo">Delivery Address 2</label>
+        <input
+            type="text"
+            class="form-control"
+            id="addressTwo"
+            name="addressTwo"
+            value="{{ addressTwo }}"
+            readonly
+            />
+      </div>
+      <div class="form-group">
+        <label for="deliveryDate">Delivery Date</label>
+        <input
+            type="date"
+            class="form-control"
+            id="deliveryDate"
+            name="deliveryDate"
+        />
+      </div>
+    <!-- Suggested Price and Total Amount fields (read-only) -->
+    <div class="form-group">
+        <label for="pricePerGallon">Price Per Gallon</label>
+        <input type="number" class="form-control" id="pricePerGallon" name="pricePerGallon" 
+        placeholder="TBD (when pricing module is finished)"
+        readonly>
     </div>
     <div class="form-group">
-      <label for="totalAmountDue">Total Amount Due</label>
-      <input
-          type="number"
-          class="form-control"
-          id="totalAmountDue"
-          name="totalAmountDue"
-          placeholder="TBD (when pricing module is finished) [Gallons * Price Per Gallon]"
-          readonly
-          />
+        <label for="totalAmountDue">Total Amount Due</label>
+        <input type="number" class="form-control" id="totalAmountDue" name="totalAmountDue" 
+        placeholder="TBD (when pricing module is finished) [Gallons * Price Per Gallon]"
+        readonly>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-  {% endblock %}
+
+    <!-- Get Quote Button -->
+    <button type="button" id="getQuoteButton" class="btn btn-secondary" onclick="getQuote()">Get Quote</button>
+
+    <!-- Submit Button -->
+    <input type="submit" class="btn btn-primary" value="Submit Quote" disabled id="submitQuoteButton">
+</form>
+
+<script>
+function getQuote() {
+    fetch('/get_quote', {
+        method: 'POST',
+        body: new FormData(document.getElementById('quoteForm'))
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error); // Handle error
+        } else {
+            document.getElementById('pricePerGallon').value = data.pricePerGallon;
+            document.getElementById('totalAmountDue').value = data.totalAmountDue;
+            document.getElementById('submitQuoteButton').disabled = false; // Enable 'Submit Quote' button
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}
+
