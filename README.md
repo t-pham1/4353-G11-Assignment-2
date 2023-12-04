@@ -1,4 +1,4 @@
-﻿# 4353-G11-Assignment-4
+﻿# 4353-G11-Fuel-Project
 
 Benjamin Tat, Christine Do, Quoc Nguyen, and Tommy Pham
 
