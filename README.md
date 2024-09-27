@@ -1,4 +1,4 @@
-﻿# 4353-G11-Fuel-Project
+﻿# Fuel Quote Platform
 
 Benjamin Tat, Christine Do, Quoc Nguyen, and Tommy Pham
 
